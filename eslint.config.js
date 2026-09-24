@@ -39,5 +39,22 @@ export default [
     languageOptions: {
       parser: tseslint.parser,
     },
+    rules: {
+      "@typescript-eslint/consistent-type-imports": [
+        "error",
+        { prefer: "type-imports", fixStyle: "separate-type-imports" },
+      ],
+    },
+  },
+
+  // Exported data-layer functions must expose typed contracts.
+  {
+    files: ["db/**/*.ts", "src/lib/**/*.ts"],
+    rules: {
+      "@typescript-eslint/explicit-module-boundary-types": [
+        "error",
+        { allowTypedFunctionExpressions: true },
+      ],
+    },
   },
 ];
