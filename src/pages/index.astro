@@ -102,4 +102,74 @@ const games = await getAllGames(getDatabase(), {
       )}
     </div>
   </div>
+
+  <script is:inline>
+    const form = document.querySelector('[data-testid="game-filters"]');
+    const grid = document.querySelector('[data-testid="games-grid"]');
+
+    if (form && grid) {
+      const makeEmptyState = () => {
+        const empty = document.createElement('div');
+        empty.dataset.testid = 'empty-state';
+        empty.className = 'text-center py-12 bg-slate-800/50 backdrop-blur-sm rounded-xl border border-slate-700';
+        empty.innerHTML = '<p data-testid="empty-state-text" class="text-slate-300">No games match the current filters.</p>';
+        return empty;
+      };
+
+      const cards = [...grid.querySelectorAll('[data-testid="game-card"]')];
+      let emptyState = null;
+
+      const applyFilters = () => {
+        const params = new URLSearchParams(window.location.search);
+        const selectedPublisherId = params.get('publisher');
+        const selectedCategoryIds = new Set(params.getAll('category'));
+        const filteredCards = cards.filter((card) => {
+          const cardPublisherId = card.getAttribute('data-publisher-id');
+          const cardCategoryId = card.getAttribute('data-category-id');
+          const matchesPublisher = !selectedPublisherId || selectedPublisherId === cardPublisherId;
+          const matchesCategory = selectedCategoryIds.size === 0 || selectedCategoryIds.has(cardCategoryId || '');
+          return matchesPublisher && matchesCategory;
+        });
+
+        grid.replaceChildren(...filteredCards);
+
+        if (filteredCards.length === 0) {
+          emptyState ??= makeEmptyState();
+          grid.appendChild(emptyState);
+        }
+      };
+
+      form.addEventListener('submit', (event) => {
+        event.preventDefault();
+        const formData = new FormData(form);
+        const params = new URLSearchParams();
+        const publisher = formData.get('publisher');
+        const categories = formData.getAll('category');
+
+        if (publisher) {
+          params.set('publisher', String(publisher));
+        }
+        categories.forEach((category) => params.append('category', String(category)));
+
+        const url = new URL(window.location.href);
+        url.search = params.toString();
+        window.history.replaceState({}, '', url);
+        applyFilters();
+      });
+
+      const clearButton = form.querySelector('[data-testid="clear-filters-button"]');
+      if (clearButton) {
+        clearButton.addEventListener('click', (event) => {
+          event.preventDefault();
+          form.reset();
+          const url = new URL(window.location.href);
+          url.search = '';
+          window.history.replaceState({}, '', url);
+          applyFilters();
+        });
+      }
+
+      applyFilters();
+    }
+  </script>
 </Layout>
