@@ -108,6 +108,10 @@ This project ships Copilot customizations to assist with quality assurance:
 
 The shared **Database Explorer** canvas (`.github/extensions/database-explorer/`) provides a small UI and agent actions for browsing the project's SQLite tables and running one read-only `SELECT` or `WITH` query at a time. It uses the database at `.data/tailspin.db` (or `DATABASE_URL` when set), so run `npm run db:setup` before opening it in a fresh checkout.
 
+### Team Canvas
+
+The shared **Team Canvas** (`.github/extensions/team-canvas/`) provides a lightweight sprint board for milestones, health status, and recent team updates. Boards are keyed by a stable `documentId`, and their JSON state is stored in the session workspace under `.copilot/team-canvas/`.
+
 ### PR Readiness Agent
 
 The **PR Readiness** agent (`.github/agents/pr-readiness.md`) is a pre-PR quality gate. Invoke it before opening a pull request to:
